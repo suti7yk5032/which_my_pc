@@ -25,149 +25,188 @@ from winotify import Notification, audio
 import customtkinter
 import subprocess
 import os
-import pickle
+import json
 import socket
 import time
 import platform
 import tkinter as tk
 from tkinter import messagebox
+import datetime
 
 
-ver = "1.0"
+ver = "1.1"
+lang = "English"
 appname = "which_my_pc"
-token = ""
+token = 1
 lib_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "lib")
 img_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "img")
 
-class List():
-    file_name = "which_my_config.pkl"
+
+class General():
+    file_name = "which_my_config.json"
     file_path = "./lib/" + file_name
 
+    def __init__(self):
+        if not os.path.isfile(General.file_path):
+            if platform.system() == "Windows" and platform.release() == "10":
+                self.reversion = platform.version().replace(".", "")
+                if int(self.reversion) >= 10020000:
+                    self.pcos = "Windows 11"
+                else:
+                    self.pcos = "Windows 10"
+            else:
+                self.pcos = platform.system() + " " + str(platform.release())
 
-if not os.path.isfile(List.file_path):
-    if platform.system() == "Windows" and platform.release() == "10":
-        reversion = platform.version().replace(".", "")
-        if int(reversion) >= 10020000:
-            pcos = "Windows 11"
-        else:
-            pcos = "Windows 10"
-    else:
-        pcos = platform.system() + " " + str(platform.release())
+            self.dummylist = {
+                "hostname": socket.gethostname(),
+                "pcos": self.pcos,
+                "pcname": socket.gethostname() + " | " + self.pcos,
+                "pcspec": "no data",
+                "sleep": "5"
+            }
 
-    dummylist = {
-        "hostname": socket.gethostname(),
-        "pcos": pcos,
-        "pcname": socket.gethostname() + " | " + pcos,
-        "pcspec": "no data",
-        "sleep": "5"
-    }
+            with open(General.file_path, "w") as list_write:
+                json.dump(self.dummylist, list_write, indent=4)
 
-    with open(List.file_path, "wb") as list_write:
-        pickle.dump(dummylist, list_write)
-
-with open(List.file_path, "rb") as list_read:
-    pclist = pickle.load(list_read)
+        with open(General.file_path, "r") as list_read:
+            General.pclist = json.load(list_read)
 
 
 class Status():
-    def __init__(self):
-        self.loop = 1
-        self.exitflag = threading.Event()
+    flag = 0
+    flag_restart = 0
 
     def run(self):
-        time.sleep(int(pclist["sleep"]))
+        Status.flag = 1
+        self.thread = threading.Thread(target=self.main)
+        self.thread.start()
+
+    def exit(self):
+        Status.flag = 0
+
+    def restart(self):
+        Status.flag = 0
+        time.sleep(1)
+        Status.flag_restart = 1
+        self.run()
+    
+    def main(self):
+        if Status.flag_restart != 1:
+            time.sleep(int(General.pclist["sleep"]))
+        else:
+            pass
+        self.time_now = datetime.datetime.now().timestamp()
         try:
-            ds_token = ds.Discord(1083896685484331069, ds.CreateFlags.default)
-            ds_activity_manager = ds_token.get_activity_manager()
-            ds_activity = ds.Activity()
-            ds_activity.details = pclist["pcname"]
-            ds_activity.state = pclist["pcspec"]
-            ds_activity.party.id = "whichmypc"
-            ds_activity.assets.large_image = "main512"
+            self.ds_token = ds.Discord(token, ds.CreateFlags.default)
+            self.ds_activity_manager = self.ds_token.get_activity_manager()
+            self.ds_activity = ds.Activity()
+            self.ds_activity.details = General.pclist["pcname"]
+            self.ds_activity.state = General.pclist["pcspec"]
+            self.ds_activity.timestamps.start = self.time_now
+            self.ds_activity.party.id = "whichmypc"
+            self.ds_activity.assets.large_image = "main512"
             def callback(result):
                 if result == ds.Result.ok:
-                    notify_result_ok = Notification(
-                        app_id=appname,
-                        title="Activity has been set.",
-                        msg="The activity is set as PC name " + pclist["hostname"] + ".",
-                        icon = img_path + r"\which_ok.png"
-                    )
-                    notify_result_ok.set_audio(audio.IM, loop=False)
-                    notify_result_ok.show()
-
-                    print("The activity is set as PC name " + pclist["hostname"] + ".")
+                    Notify().activity_suc()
+                    print("The activity is set as PC name " + General.pclist["hostname"] + ".")
                 else:
                     print("error")
-                    "raise Exception(result)"
-
-            ds_activity_manager.update_activity(ds_activity, callback)
-
-            while not self.exitflag.is_set():
+                    raise Exception(result)
+                
+            self.ds_activity_manager.update_activity(self.ds_activity, callback)
+            while Status.flag == 1:
                 time.sleep(1/10)
-                ds_token.run_callbacks()
-
+                self.ds_token.run_callbacks()
             return
 
         except:
-            notify_result_no = Notification(
-                app_id=appname,
-                title="Activity is not set.",
-                msg="An error has occurred, please start Discord and try again.",
-                icon = img_path + r"\error.png"
-            )
-            notify_result_no.set_audio(audio.Default, loop=False)
-            notify_result_no.show()
+            Notify().activity_error()
             print("An error has occurred, please start Discord and try again.")
             return
+        
+
+class Notify():
+    detail_title = "title_example"
+    detail_message = "message_example"
+    detail_icon = img_path + r"\which_ok.png"
+
+    def load(self, audio):
+        self.detail = Notification(
+            app_id=appname,
+            title=Notify.detail_title,
+            msg=Notify.detail_message,
+            icon=Notify.detail_icon
+        )
+        self.detail.set_audio(audio, loop=False)
+        self.detail.show()
+
+    def activity_suc(self):
+        Notify.detail_title = "Activity has been set."
+        Notify.detail_message = "The activity is set as PC name " + General.pclist["hostname"] + "." + "\nThe application is resident in the taskbar."
+        Notify.detail_icon = img_path + r"\which_ok.png"
+        Notify().load(audio.IM)
+
+    def activity_error(self):
+        Notify.detail_title = "Activity is not set."
+        Notify.detail_message = "An error has occurred, please start Discord and try again."
+        Notify.detail_icon = img_path + r"\error.png"
+        Notify().load(audio.Default)
+    
+    def startup_info(self):
+        Notify.detail_title = "Add to Startup"
+        Notify.detail_message = "Create a shortcut to " + appname + " in the startup folder."
+        Notify.detail_icon = img_path + r"\info.png"
+        Notify().load(audio.Default)
+    
+    def which_info(self):
+        Notify.detail_title = "Version " + ver
+        Notify.detail_message = "for Windows" + "\n" + lang
+        Notify.detail_icon = img_path + r"\logo\which_logo128.png"
+        Notify().load(audio.Default)
 
 
 class Tray():
-    def __init__(self):
-        pass
-
     def run(self):
-        def info():
-            notify_ver_func()
+        self.thread = threading.Thread(target=self.main)
+        self.thread.start()
 
-        def launch_startup():
-            subprocess.Popen(["explorer", "shell:startup"])
-            notify_startup = Notification(
-                app_id=appname,
-                title="Add to Startup",
-                msg="Create a shortcut to " + appname + " in the startup folder.",
-                icon = img_path + r"\info.png"
-            )
-            notify_startup.set_audio(audio.Default, loop=False)
-            notify_startup.show()
+    def exit(self):
+        Status().exit()
+        self.tray.stop()
 
-        def launch_ui_settings():
-            def run_settings():
-                if __name__ == "__main__":
-                    app = App()
-                    app.mainloop()
-            settings_thread = threading.Thread(target=run_settings())
-            settings_thread.start()
+    def restart(self):
+        Status().restart()
 
-
-        def which_exit():
-            status_stop_thread = threading.Thread(target=status_stop_func())
-            status_stop_thread.start()
-            status_stop_thread.join()
-            self.tray.stop()
-
-        trayicon = Image.open(img_path + r"\logo\which_logo.ico")
-        traymenu = Menu(
-            MenuItem("Version " + ver, info),
+    def main(self):
+        self.trayicon = Image.open(img_path + r"\logo\which_logo.ico")
+        self.traymenu = Menu(
+            MenuItem("Version " + ver, self.which_info),
             Menu.SEPARATOR,
-            MenuItem("Edit info", launch_ui_settings),
-            MenuItem("Add to Startup", launch_startup),
+            MenuItem("Edit Activity", self.settings_launch),
+            MenuItem("Add to Startup", self.startup_launch),
             Menu.SEPARATOR,
-            MenuItem("Exit", which_exit)
+            MenuItem("Restart", self.restart),
+            MenuItem("Close", self.exit)
         )
 
         self.tray = Icon(name=appname, title=appname,
-                         icon=trayicon, menu=traymenu)
+                         icon=self.trayicon, menu=self.traymenu)
         self.tray.run()
+
+    def which_info(self):
+        Notify().which_info()
+    
+    def startup_launch(self):
+        subprocess.Popen(["explorer", "shell:startup"])
+        Notify().startup_info()
+
+    def settings_launch(self):
+        def run_settings():
+                if __name__ == "__main__":
+                    app = App()
+                    app.mainloop()
+        self.settings_thread = threading.Thread(target=run_settings)
+        self.settings_thread.start()
 
 
 class App(customtkinter.CTk):
@@ -214,7 +253,7 @@ class App(customtkinter.CTk):
             self.settings_pcname_frame, text="Rename PC", font=self.title_font, anchor=tk.W, width=428)
         self.settings_pcname_info_label.grid(row=0, column=0)
         self.settings_pcname_original_label = customtkinter.CTkLabel(
-            self.settings_pcname_frame, text="Current PC Name : " + pclist["hostname"], font=self.ui_font, anchor=tk.W, width=428)
+            self.settings_pcname_frame, text="Current PC Name : " + General.pclist["hostname"], font=self.ui_font, anchor=tk.W, width=428)
         self.settings_pcname_original_label.grid(row=1, column=0)
         self.settings_pcname_textbox = customtkinter.CTkEntry(
             self.settings_pcname_frame, placeholder_text="Enter a new name for the PC", width=428, font=self.ui_font)
@@ -227,7 +266,7 @@ class App(customtkinter.CTk):
             self.settings_pcos_frame, text="Rename OS", font=self.title_font, anchor=tk.W, width=428)
         self.settings_pcos_info_label.grid(row=0, column=0)
         self.settings_pcos_original_label = customtkinter.CTkLabel(
-            self.settings_pcos_frame, text="Current OS Name : " + pclist["pcos"], font=self.ui_font, anchor=tk.W, width=428)
+            self.settings_pcos_frame, text="Current OS Name : " + General.pclist["pcos"], font=self.ui_font, anchor=tk.W, width=428)
         self.settings_pcos_original_label.grid(row=1, column=0)
         self.settings_pcos_textbox = customtkinter.CTkEntry(
             self.settings_pcos_frame, placeholder_text="Enter a new name for the OS", width=428, font=self.ui_font)
@@ -240,10 +279,10 @@ class App(customtkinter.CTk):
             self.settings_pcspec_frame, text="Change PC specs", font=self.title_font, anchor=tk.W, width=428)
         self.settings_pcspec_info_label.grid(row=0, column=0)
         self.settings_pcspec_original_label = customtkinter.CTkLabel(
-            self.settings_pcspec_frame, text="Current PC specs : " + pclist["pcspec"], font=self.ui_font, anchor=tk.W, width=428)
+            self.settings_pcspec_frame, text="Current PC specs : " + General.pclist["pcspec"], font=self.ui_font, anchor=tk.W, width=428)
         self.settings_pcspec_original_label.grid(row=1, column=0)
         self.settings_pcspec_textbox = customtkinter.CTkEntry(
-            self.settings_pcspec_frame, placeholder_text="Enter PC specifications", width=428, font=self.ui_font)
+            self.settings_pcspec_frame, placeholder_text="Enter PC specs", width=428, font=self.ui_font)
         self.settings_pcspec_textbox.grid(row=2, column=0, pady=2)
 
         self.settings_sleep_frame = customtkinter.CTkFrame(
@@ -253,7 +292,7 @@ class App(customtkinter.CTk):
             self.settings_sleep_frame, text="Change waiting time", font=self.title_font, anchor=tk.W, width=428)
         self.settings_sleep_info_label.grid(row=0, column=0)
         self.settings_sleep_original_label = customtkinter.CTkLabel(
-            self.settings_sleep_frame, text="Current waiting time : " + pclist["sleep"], font=self.ui_font, anchor=tk.W, width=428)
+            self.settings_sleep_frame, text="Current waiting time : " + General.pclist["sleep"], font=self.ui_font, anchor=tk.W, width=428)
         self.settings_sleep_original_label.grid(row=1, column=0)
         self.settings_sleep_textbox = customtkinter.CTkEntry(
             self.settings_sleep_frame, placeholder_text="Enter waiting time (sec)", width=428, font=self.ui_font)
@@ -282,12 +321,13 @@ class App(customtkinter.CTk):
         self.select_frame("settings_frame")
 
     def app_info(self):
-        notify_ver_func()
+        Notify().which_info()
 
     def settings_save_check(self):
         if self.settings_sleep_textbox.get() == "":
             self.settings_save()
             self.destroy()
+            Status().restart()
         else:
             if self.settings_sleep_textbox.get().isdecimal():
                 if int(self.settings_sleep_textbox.get()) >= 240:
@@ -301,69 +341,38 @@ class App(customtkinter.CTk):
                 else:
                     self.settings_save()
                     self.destroy()
+                    Status().restart()
             else:
                 messagebox.showerror(
                     appname + " | Error", "The value entered for the wait time is invalid.\nPlease try again.")
 
     def settings_save(self):
         if not (self.settings_pcname_textbox.get() == ""):
-            pclist["hostname"] = self.settings_pcname_textbox.get()
-            pclist["pcname"] = self.settings_pcname_textbox.get() + \
-                " | " + pclist["pcos"]
+            General.pclist["hostname"] = self.settings_pcname_textbox.get()
+            General.pclist["pcname"] = self.settings_pcname_textbox.get() + \
+                " | " + General.pclist["pcos"]
 
         if not (self.settings_pcos_textbox.get() == ""):
-            pclist["pcos"] = self.settings_pcos_textbox.get()
-            pclist["pcname"] = pclist["hostname"] + \
+            General.pclist["pcos"] = self.settings_pcos_textbox.get()
+            General.pclist["pcname"] = General.pclist["hostname"] + \
                 " | " + self.settings_pcos_textbox.get()
 
         if not (self.settings_pcspec_textbox.get() == ""):
-            pclist["pcspec"] = self.settings_pcspec_textbox.get()
+            General.pclist["pcspec"] = self.settings_pcspec_textbox.get()
 
         if not (self.settings_sleep_textbox.get() == ""):
-            pclist["sleep"] = self.settings_sleep_textbox.get()
+            General.pclist["sleep"] = self.settings_sleep_textbox.get()
 
-        with open(List.file_path, "wb") as list_write:
-            pickle.dump(pclist, list_write)
+        with open(General.file_path, "w") as list_write:
+            json.dump(General.pclist, list_write, indent=4)
 
-        print(pclist)
-
-        notify_edit = Notification(
-            app_id=appname,
-            title="Changes saved.",
-            msg="Restart " + appname + " for changes to take effect.",
-            icon = img_path + r"\info.png"
-        )
-        notify_edit.set_audio(audio.Default, loop=False)
-        notify_edit.show()
-
-
-def notify_ver_func():
-    notify_ver = Notification(
-        app_id = appname,
-        title = "Version " + ver,
-        msg = "for Windows" + "\nEnglish",
-        icon = img_path + r"\logo\which_logo128.png"
-    )
-    notify_ver.set_audio(audio.Default, loop=False)
-    notify_ver.show()
+        print(General.pclist)
 
 
 if __name__ == "__main__":
-    status_instance = Status()
-    tray_instance = Tray()
-
-    def status_thread_func():
-        status_instance.run()
-
-    def tray_thread_func():
-        tray_instance.run()
-
-    def status_stop_func():
-        status_instance.exitflag.set()
-        status_thread.join()
-
-    status_thread = threading.Thread(target=status_thread_func)
-    tray_thread = threading.Thread(target=tray_thread_func)
-
+    status_thread = threading.Thread(target=Status().run)
+    tray_thread = threading.Thread(target=Tray().run)
+    
+    General()
     status_thread.start()
     tray_thread.start()
