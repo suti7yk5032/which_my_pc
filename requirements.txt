@@ -1,0 +1,5 @@
+discordsdk
+pystray
+winotify
+customtkinter
+pillow
