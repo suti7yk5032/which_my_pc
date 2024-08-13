@@ -89,7 +89,7 @@
             },
             "not_found_discord": {
                 "title": "アクティビティはセットされていません",
-                "details": ["Discordは終了されたようです。\nアクティビティはセットされません。"]
+                "details": ["Discordが時間内に起動しませんでした。\nアクティビティはセットされません。"]
             },
             "close_discord": {
                 "title": "アクティビティはセットされていません",
@@ -201,7 +201,7 @@
             },
             "not_found_discord": {
             "title": "Activity Not Set",
-            "details": ["Discord seems to have been terminated.\nThe activity will not be set."]
+            "details": ["Discord did not start within the time limit.\nThe activity will not be set."]
             },
             "close_discord": {
             "title": "Activity Not Set",
