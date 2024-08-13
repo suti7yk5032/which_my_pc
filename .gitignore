@@ -1,0 +1,5 @@
+/venv/
+/*.lnk
+/lib/which_my_config.json
+/lib/discord_game_sdk.dll
+/temp/
