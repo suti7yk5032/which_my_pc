@@ -1,0 +1,224 @@
+{
+    "ja": {
+        "initial": {
+            "not_found_discord": "Discordが起動されませんでした。終了します。",
+            "not_found_dll": "必要なdllファイルが見つかりません。終了します。",
+            "waiting_discord": "Discordが起動していません。待機中です..."
+        },
+        "app": {
+            "title": {
+                "settings": " | 設定"
+            },
+            "label": {
+                "change_pc_name": "PCの名前を変更",
+                "current_pc_name": "現在のPCの名前 : ",
+                "enter_pc_name": "PCの名前を入力",
+                "change_os_name": "OSの表示名を変更",
+                "current_os_name": "現在のOSの表示名 : ",
+                "enter_os_name": "OSの表示名を入力",
+                "change_pc_specs": "PCのスペックを変更",
+                "current_pc_specs": "現在のPCのスペック : ",
+                "enter_pc_specs": "PCのスペックを入力",
+                "change_sleep_time": "待機時間を変更",
+                "current_sleep_time": "現在の待機時間 : ",
+                "enter_sleep_time": "待機時間を秒単位で入力",
+                "change_large_image_text": "アイコンのホバーテキスト",
+                "current_large_image_text": "現在のテキスト : ",
+                "enter_large_image_text": "アイコンのホバーテキストを入力",
+                "change_small_image_text": "OSアイコンのホバーテキスト",
+                "current_small_image_text": "現在のテキスト : ",
+                "enter_small_image_text": "OSアイコンのホバーテキストを入力",
+                "change_party_size": "番号",
+                "current_party_size": "現在の番号 : ",
+                "enter_party_size": "番号を入力",
+                "change_party_max": "番号の分母",
+                "current_party_max": "現在の分母 : ",
+                "enter_party_max": "番号の分母を入力",
+                "select_language": "言語",
+                "current_language": "現在の言語 : "
+            },
+            "button": {
+                "save": "保存"
+            },
+            "msgbox": {
+                "long_sleep_time": {
+                    "title": " | 入力値の確認",
+                    "details": "待機時間が非常に長いようです。\nこのまま保存した場合、次回起動時になかなか起動しないなどの問題が\n発生する可能性があります。\n保存しますか?"
+                },
+                "invalid_sleep_value": {
+                    "title": " | 入力値のエラー",
+                    "details": "待機時間に入力された値は無効です。\n自然数で入力してから、もう一度お試しください。"
+                },
+                "invalid_party_value": {
+                    "title": " | 入力値のエラー",
+                    "details": "番号に入力された値は無効です。\n自然数で入力してから、もう一度お試しください。"
+                },
+                "invalid_party_max_value": {
+                    "title": " | 入力値のエラー",
+                    "details": "番号の分母に入力された値は無効です。\n自然数で入力してから、もう一度お試しください。"
+                },
+                "invalid_language": {
+                    "title": " | 入力値のエラー",
+                    "details": "入力された言語は、まだ実装されていません。\nリストの中から選んで、もう一度お試しください。"
+                },
+                "invalid_party_size": {
+                    "title": " | 入力値のエラー",
+                    "details": "番号と分母の片方だけを Null にすることはできません。\n両方に数字を入力するか、両方とも 0 にしてください。"
+                }
+            }
+        },
+        "tray": {
+            "version": "バージョン | ",
+            "open_settings": "PC情報を編集",
+            "register_startup": "スタートアップに登録",
+            "restart": "再起動",
+            "exit": "終了"
+        },
+        "notify": {
+            "success_activity": {
+                "title": "アクティビティをセットしました",
+                "details": ["現在のPCは ", " です。\nアプリはタスクバーに収納されています。"]
+            },
+            "error_activity": {
+                "title": "アクティビティはセットされていません",
+                "details": ["エラーが発生しました。内容を表示します。\n"]
+            },
+            "info_startup_register": {
+                "title": "スタートアップに登録",
+                "details": ["スタートアップ フォルダに ", " のショートカットを作成してください。"]
+            },
+            "not_found_discord": {
+                "title": "アクティビティはセットされていません",
+                "details": ["Discordは終了されたようです。\nアクティビティはセットされません。"]
+            },
+            "close_discord": {
+                "title": "アクティビティはセットされていません",
+                "details": ["Discordは終了されたようです。\nアクティビティはセットされません。"]
+            },
+            "not_found_dll": {
+                "title": "エラーが発生しました",
+                "details": ["必要なdllファイルが見つかりません。\nファイルを適切に配置してから、もう一度起動してください。"]
+            },
+            "required_restart": {
+                "title": "再起動が必要です | Restart required",
+                "details": ["設定を完全に適用するには、 ", " をもう一度起動してください。"]
+            },
+            "about_version": {
+                "title": "バージョン | ",
+                "details": ["for ", "日本語"]
+            }
+        }
+
+
+    },
+    "en": {
+        "initial": {
+        "not_found_discord": "Discord did not start. Exiting.",
+        "not_found_dll": "The required dll file was not found. Exiting.",
+        "waiting_discord": "Discord is not running. Waiting..."
+        },
+        "app": {
+            "title": {
+                "settings": " | Settings"
+            },
+            "label": {
+                "change_pc_name": "Change PC Name",
+                "current_pc_name": "Current PC Name: ",
+                "enter_pc_name": "Enter PC Name",
+                "change_os_name": "Change OS Display Name",
+                "current_os_name": "Current OS Display Name: ",
+                "enter_os_name": "Enter OS Display Name",
+                "change_pc_specs": "Change PC Specs",
+                "current_pc_specs": "Current PC Specs: ",
+                "enter_pc_specs": "Enter PC Specs",
+                "change_sleep_time": "Change Sleep Time",
+                "current_sleep_time": "Current Sleep Time: ",
+                "enter_sleep_time": "Enter Sleep Time in Seconds",
+                "change_large_image_text": "Change Icon Hover Text",
+                "current_large_image_text": "Current Text: ",
+                "enter_large_image_text": "Enter Icon Hover Text",
+                "change_small_image_text": "Change OS Icon Hover Text",
+                "current_small_image_text": "Current Text: ",
+                "enter_small_image_text": "Enter OS Icon Hover Text",
+                "change_party_size": "Change Number",
+                "current_party_size": "Current Number: ",
+                "enter_party_size": "Enter Number",
+                "change_party_max": "Change Number Denominator",
+                "current_party_max": "Current Denominator: ",
+                "enter_party_max": "Enter Number Denominator",
+                "select_language": "Language",
+                "current_language": "Current Language: "
+            },
+            "button": {
+                "save": "Save"
+            },
+            "msgbox": {
+                "long_sleep_time": {
+                "title": " | Input Value Confirmation",
+                "details": "The sleep time seems to be very long.\nIf you save it as is, there may be problems such as not starting up at the next startup.\nDo you want to save it?"
+                },
+                "invalid_sleep_value": {
+                "title": " | Input Value Error",
+                "details": "The value entered for the sleep time is invalid.\nPlease enter a natural number and try again."
+                },
+                "invalid_party_value": {
+                "title": " | Input Value Error",
+                "details": "The value entered for the number is invalid.\nPlease enter a natural number and try again."
+                },
+                "invalid_party_max_value": {
+                "title": " | Input Value Error",
+                "details": "The value entered for the number denominator is invalid.\nPlease enter a natural number and try again."
+                },
+                "invalid_language": {
+                "title": " | Input Value Error",
+                "details": "The entered language has not been implemented yet.\nPlease select from the list and try again."
+                },
+                "invalid_party_size": {
+                "title": " | Input Value Error",
+                "details": "You cannot set either the number or the denominator to Null.\nPlease enter numbers for both or set both to 0."
+                }
+            }
+        },
+        "tray": {
+            "version": "Version | ",
+            "open_settings": "Edit PC Information",
+            "register_startup": "Register in Startup",
+            "restart": "Restart",
+            "exit": "Exit"
+        },
+        "notify": {
+            "success_activity": {
+            "title": "Activity Set",
+            "details": ["The current PC is ", " .\nThe app is minimized to the taskbar."]
+            },
+            "error_activity": {
+            "title": "Activity Not Set",
+            "details": ["An error occurred. Displaying details.\n"]
+            },
+            "info_startup_register": {
+            "title": "Register in Startup",
+            "details": ["Please create a shortcut for ", " in the Startup folder."]
+            },
+            "not_found_discord": {
+            "title": "Activity Not Set",
+            "details": ["Discord seems to have been terminated.\nThe activity will not be set."]
+            },
+            "close_discord": {
+            "title": "Activity Not Set",
+            "details": ["Discord seems to have been terminated.\nThe activity will not be set."]
+            },
+            "not_found_dll": {
+            "title": "Error Occurred",
+            "details": ["The required dll file was not found.\nPlease place the file correctly and restart."]
+            },
+            "required_restart": {
+            "title": "Restart Required",
+            "details": ["To fully apply the settings, please restart ", " ."]
+            },
+            "about_version": {
+            "title": "Version | ",
+            "details": ["for ", "English"]
+            }
+        }
+    }
+}
