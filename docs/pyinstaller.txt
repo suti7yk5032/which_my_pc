@@ -1,0 +1,1 @@
+pyinstaller .\which_my_pc.py --noconsole --onefile -i .\img\logo\which_logo.ico
